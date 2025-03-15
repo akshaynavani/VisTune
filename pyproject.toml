@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vistune"
+version = "0.1.0"
+description = "Parameter-efficient (LoRA) fine-tuning and ablations for CLIP and ViT"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.1",
+    "torchvision>=0.16",
+    "transformers>=4.38",
+    "pyyaml>=6.0",
+    "tqdm>=4.66",
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+vistune = "vistune.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["vistune*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
