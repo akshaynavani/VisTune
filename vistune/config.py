@@ -21,6 +21,11 @@ class DataConfig:
     # Limit the number of training samples per class (few-shot experiments). None = all.
     shots_per_class: int | None = None
     augment: bool = True
+    # Optional text file with one human-readable class name per line (used for CLIP
+    # prompts when the dataset does not expose readable class names itself).
+    class_names_file: str | None = None
+    # Fraction of the training split held out for validation / model selection.
+    val_fraction: float = 0.0
 
 
 @dataclass
