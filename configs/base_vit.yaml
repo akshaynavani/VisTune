@@ -1,0 +1,26 @@
+name: vit_flowers_lora
+output_dir: runs
+data:
+  name: flowers102
+  root: data
+  train_split: train
+  eval_split: test
+  batch_size: 64
+  num_workers: 4
+model:
+  family: vit
+  checkpoint: google/vit-base-patch16-224-in21k
+lora:
+  rank: 8
+  alpha: 16
+  dropout: 0.1
+  targets: qv
+train:
+  strategy: lora
+  epochs: 10
+  lr: 1.0e-3
+  head_lr: 1.0e-3
+  weight_decay: 0.05
+  warmup_epochs: 1
+  amp: true
+  seed: 42

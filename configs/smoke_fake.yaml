@@ -1,0 +1,19 @@
+# Tiny end-to-end configuration on synthetic data (no dataset download).
+name: smoke_fake
+output_dir: runs
+data:
+  name: fake
+  batch_size: 16
+  num_workers: 0
+model:
+  family: vit
+  checkpoint: google/vit-base-patch16-224-in21k
+lora:
+  rank: 4
+  alpha: 8
+  targets: qv
+train:
+  strategy: lora
+  epochs: 1
+  amp: false
+  device: cpu

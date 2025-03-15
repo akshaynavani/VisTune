@@ -1,0 +1,28 @@
+name: clip_pets_lora
+output_dir: runs
+data:
+  name: pets
+  root: data
+  train_split: train
+  eval_split: test
+  batch_size: 64
+  num_workers: 4
+model:
+  family: clip
+  checkpoint: openai/clip-vit-base-patch16
+  zero_shot_head: true
+  prompt_template: "a photo of a {}, a type of pet."
+lora:
+  rank: 8
+  alpha: 16
+  dropout: 0.1
+  targets: qv
+train:
+  strategy: lora
+  epochs: 5
+  lr: 5.0e-4
+  head_lr: 1.0e-4   # the zero-shot head is already good; move it gently
+  weight_decay: 0.05
+  warmup_epochs: 0.5
+  amp: true
+  seed: 42
