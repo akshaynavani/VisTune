@@ -34,7 +34,8 @@ class ModelConfig:
     checkpoint: str = "google/vit-base-patch16-224-in21k"
     # CLIP only: initialise the classification head from text prompt embeddings.
     zero_shot_head: bool = True
-    prompt_template: str = "a photo of a {}."
+    # A single template, or "ensemble" to average over prompts.DEFAULT_TEMPLATES.
+    prompt_template: str = "ensemble"
 
 
 @dataclass
