@@ -52,7 +52,8 @@ class LoRAConfig:
 
 @dataclass
 class TrainConfig:
-    # "linear_probe" (head only), "lora" (adapters + head), "full" (everything).
+    # "zero_shot" (no training, CLIP text head), "linear_probe" (head only),
+    # "lora" (adapters + head), "full" (everything).
     strategy: str = "lora"
     epochs: int = 10
     lr: float = 1e-3
