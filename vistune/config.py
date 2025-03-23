@@ -123,6 +123,16 @@ def set_dotted(d: dict[str, Any], dotted_key: str, value: Any) -> None:
     node[keys[-1]] = value
 
 
+def _coerce(value: Any) -> Any:
+    """PyYAML (YAML 1.1) reads "3e-4" as a string; treat numeric-looking strings as floats."""
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return value
+    return value
+
+
 def parse_overrides(overrides: list[str] | None) -> dict[str, Any]:
     """Turn ["train.lr=3e-4", "lora.rank=4"] into a nested dict (values parsed as YAML)."""
     result: dict[str, Any] = {}
@@ -130,7 +140,7 @@ def parse_overrides(overrides: list[str] | None) -> dict[str, Any]:
         if "=" not in item:
             raise ValueError(f"Override must look like key=value, got {item!r}")
         key, raw = item.split("=", 1)
-        set_dotted(result, key.strip(), yaml.safe_load(raw))
+        set_dotted(result, key.strip(), _coerce(yaml.safe_load(raw)))
     return result
 
 
