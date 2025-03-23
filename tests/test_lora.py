@@ -102,3 +102,12 @@ def test_merge_helpers_roundtrip():
     assert torch.allclose(model(x), ref, atol=1e-5)
     unmerge_lora(model)
     assert torch.allclose(model(x), ref, atol=1e-5)
+
+
+def test_config_overrides_parse_into_nested_dataclasses():
+    from vistune.config import load_config
+
+    cfg = load_config(None, ["lora.rank=4", "lora.targets=[query, value]", "train.lr=3e-4"])
+    assert cfg.lora.rank == 4
+    assert cfg.lora.targets == ["query", "value"]
+    assert cfg.train.lr == 3e-4
