@@ -1,10 +1,11 @@
-"""Command line interface: `vistune train|evaluate ...` (also `python -m vistune`)."""
+"""Command line interface: `vistune train|evaluate|ablate|report` (also `python -m vistune`)."""
 
 from __future__ import annotations
 
 import argparse
 import json
 import logging
+from pathlib import Path
 
 from .config import load_config
 
@@ -37,6 +38,31 @@ def cmd_evaluate(args) -> None:
     print(json.dumps(evaluate_checkpoint(cfg, args.checkpoint), indent=2))
 
 
+def cmd_ablate(args) -> None:
+    from .ablation import expand, load_ablation, run_ablation
+
+    spec = load_ablation(args.spec)
+    if args.list:
+        for cfg in expand(spec):
+            print(cfg.run_dir)
+        return
+    run_ablation(spec, resume=not args.no_resume, dry_run=args.dry_run)
+    if not args.dry_run and not args.no_report:
+        from .report import write_report
+
+        outputs = write_report(Path(spec.output_dir) / spec.name, metric=args.metric)
+        print((outputs["summary_md"]).read_text())
+
+
+def cmd_report(args) -> None:
+    from .report import write_report
+
+    outputs = write_report(args.root, metric=args.metric, plot=not args.no_plot)
+    print(outputs["summary_md"].read_text())
+    for key, path in outputs.items():
+        print(f"{key}: {path}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="vistune", description=__doc__)
     parser.add_argument("--log-level", default="INFO")
@@ -50,6 +76,21 @@ def build_parser() -> argparse.ArgumentParser:
     _add_config_args(p)
     p.add_argument("--checkpoint", help="*_trainable.pt saved by `train`")
     p.set_defaults(func=cmd_evaluate)
+
+    p = sub.add_parser("ablate", help="Run every configuration in an ablation YAML")
+    p.add_argument("spec", help="Ablation YAML, e.g. configs/ablations/vit_rank.yaml")
+    p.add_argument("--list", action="store_true", help="Only print the expanded run names")
+    p.add_argument("--dry-run", action="store_true", help="Log the plan without training")
+    p.add_argument("--no-resume", action="store_true", help="Re-run completed configurations")
+    p.add_argument("--no-report", action="store_true")
+    p.add_argument("--metric", choices=["final", "best"], default="final")
+    p.set_defaults(func=cmd_ablate)
+
+    p = sub.add_parser("report", help="Summarise finished runs under a directory")
+    p.add_argument("root", help="Directory containing run folders with metrics.json")
+    p.add_argument("--metric", choices=["final", "best"], default="final")
+    p.add_argument("--no-plot", action="store_true")
+    p.set_defaults(func=cmd_report)
     return parser
 
 
