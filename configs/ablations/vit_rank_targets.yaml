@@ -1,0 +1,14 @@
+# ViT-B/16 (IN-21k) on Flowers102: LoRA rank x target modules, against head-only and full FT.
+name: vit_flowers_rank_targets
+base: ../base_vit.yaml
+output_dir: runs/ablations
+overrides:
+  train: {epochs: 10}
+grid:
+  lora.rank: [1, 4, 8, 16, 32]
+  lora.targets: [qv, attn, mlp, all]
+variants:
+  - {name: lora}
+  - {name: linear_probe, train.strategy: linear_probe}
+  - {name: full, train.strategy: full, train.lr: 5.0e-5, train.head_lr: 1.0e-3}
+seeds: [0, 1, 2]

@@ -1,0 +1,7 @@
+# Two-run CPU smoke ablation on synthetic data.
+name: smoke
+base: ../smoke_fake.yaml
+output_dir: runs/ablations
+grid:
+  lora.rank: [2, 4]
+seeds: [0]

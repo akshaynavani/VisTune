@@ -1,0 +1,12 @@
+# CLIP ViT-B/16 on Oxford-IIIT Pets: LoRA scaling (alpha) and which blocks get adapters.
+name: clip_pets_alpha_layers
+base: ../base_clip.yaml
+output_dir: runs/ablations
+grid:
+  lora.alpha: [8, 16, 32]
+  lora.layers: [null, [-4, -3, -2, -1], [0, 1, 2, 3]]
+variants:
+  - {name: lora}
+  - {name: zero_shot, train.strategy: zero_shot}
+  - {name: linear_probe, train.strategy: linear_probe}
+seeds: [0, 1]

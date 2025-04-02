@@ -1,0 +1,15 @@
+# Few-shot regime on EuroSAT: does LoRA beat a linear probe on top of CLIP with little data?
+name: clip_eurosat_few_shot
+base: ../base_clip.yaml
+output_dir: runs/ablations
+overrides:
+  data: {name: eurosat}
+  model: {prompt_template: "a centered satellite photo of {}."}
+  train: {epochs: 20}
+grid:
+  data.shots_per_class: [1, 4, 16]
+  lora.rank: [4, 16]
+variants:
+  - {name: lora}
+  - {name: linear_probe, train.strategy: linear_probe}
+seeds: [0, 1, 2]
